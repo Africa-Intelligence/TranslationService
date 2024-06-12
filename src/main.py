@@ -1,7 +1,7 @@
 from tqdm import tqdm
-from src.api.azure_translate_api import AzureTranslateAPI
+
+from src.api.aws_translate_api import AWSTranslateAPI
 from src.api.i_translate_api import ITranslateAPI
-from src.api.opus_api import OpusAPI
 from src.data.dataset_loader import DatasetLoader
 import pandas as pd
 
@@ -10,8 +10,8 @@ def run():
     dataset_name = "tatsu-lab/alpaca"
     dataset = DatasetLoader(dataset_name)
     FROM_LANGUAGE = 'en'
-    LANGUAGES_TO_TRANSLATE_TO = ['crs', 'fr']
-    api: ITranslateAPI = OpusAPI(FROM_LANGUAGE, LANGUAGES_TO_TRANSLATE_TO)
+    LANGUAGES_TO_TRANSLATE_TO = ['af']
+    api: ITranslateAPI = AWSTranslateAPI(FROM_LANGUAGE, LANGUAGES_TO_TRANSLATE_TO)
     column_names = dataset.df.columns
 
     for index, row in tqdm(dataset.df.iterrows(), colour='GREEN', total=dataset.df.shape[0]):

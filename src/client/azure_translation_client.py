@@ -1,5 +1,4 @@
 import os
-import time
 
 from azure.ai.translation.text.models import InputTextItem, TranslatedTextItem
 from azure.ai.translation.text import TextTranslationClient
