@@ -4,13 +4,14 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 from src.api.i_translate_api import ITranslateAPI
 from src.client.opus_client import OpusClient
+from typing import Dict, List
 
 
 class OpusAPI(ITranslateAPI):
 
-    def __init__(self, from_language: str, to_languages: [str]):
+    def __init__(self, from_language: str, to_languages: List[str]):
         super().__init__(from_language, to_languages)
-        self.models: {str: OpusClient} = {}
+        self.models: Dict[str: OpusClient] = {}
         for to_language in to_languages:
             self.models[to_language] = OpusClient(from_language=from_language, to_language=to_language)
 
@@ -20,7 +21,7 @@ class OpusAPI(ITranslateAPI):
             length_function=len,
         )
 
-    def translate(self, row: pd.DataFrame, column_names: [str]) -> {str: [pd.DataFrame]}:
+    def translate(self, row: pd.DataFrame, column_names: List[str]) -> Dict[str: pd.DataFrame]:
         result = {str: [pd.DataFrame]}
         for to_language in self.to_languages:
             result[to_language] = pd.DataFrame()
@@ -43,5 +44,5 @@ class OpusAPI(ITranslateAPI):
         return result
 
     def _get_chunks(self, text) -> [str]:
-        chunks: [Document] = self.text_splitter.create_documents([text])
+        chunks: List[Document] = self.text_splitter.create_documents([text])
         return [chunk.page_content for chunk in chunks]

@@ -3,15 +3,16 @@ from azure.ai.translation.text.models import TranslatedTextItem
 from src.api.i_translate_api import ITranslateAPI
 from src.client.azure_translation_client import AzureTranslationClient
 import pandas as pd
+from typing import List, Dict
 
 
 class AzureTranslateAPI(ITranslateAPI):
-    def __init__(self, from_language: str, to_languages: [str]):
+    def __init__(self, from_language: str, to_languages: List[str]):
         super().__init__(from_language, to_languages)
         self.client = AzureTranslationClient()
 
-    def translate(self, row: pd.DataFrame, column_names: [str]) -> {str: [pd.DataFrame]}:
-        response: [TranslatedTextItem] = self.client.translate(row, self.from_language, self.to_languages)
+    def translate(self, row: pd.DataFrame, column_names: List[str]) -> Dict[str, pd.DataFrame]:
+        response: List[TranslatedTextItem] = self.client.translate(row, self.from_language, self.to_languages)
         result = {str: [pd.DataFrame]}
         for to_language in self.to_languages:
             result[to_language] = pd.DataFrame()
