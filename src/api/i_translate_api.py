@@ -7,5 +7,5 @@ class ITranslateAPI(object):
         self.from_language: str = from_language
         self.to_languages: List[str] = to_languages
 
-    def translate(self, row: pd.DataFrame, column_names: List[str]) -> Dict[str: pd.DataFrame]:
+    def translate(self, row: pd.DataFrame, column_names: List[str]) -> Dict[str, pd.DataFrame]:
         pass
