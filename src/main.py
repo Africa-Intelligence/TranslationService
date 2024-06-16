@@ -15,6 +15,7 @@ from src.data.dataset_loader import DatasetLoader
 import pandas as pd
 from typing import Dict
 
+
 def run():
     dataset_name = "tatsu-lab/alpaca"
     dataset = DatasetLoader(dataset_name)
