@@ -8,9 +8,6 @@ sys.path.insert(0, parent_dir)
 
 from tqdm import tqdm
 
-from src.api.aws_translate_api import AWSTranslateAPI
-from src.api.opus_translate_api import OpusTranslateAPI
-from src.api.meta_translate_api import MetaTranslateAPI
 from src.api.open_source.opus_translate_api import OpusTranslateAPI
 from src.api.open_source.meta_translate_api import MetaTranslateAPI
 from src.api.i_translate_api import ITranslateAPI
