@@ -2,3 +2,4 @@ poetry.lock
 .idea
 *.DS_STORE
 *.pyc
+*.csv

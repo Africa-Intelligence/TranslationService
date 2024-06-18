@@ -6,6 +6,7 @@ from azure.core.credentials import AzureKeyCredential
 import pandas as pd
 from azure.core.exceptions import HttpResponseError
 from dotenv import load_dotenv
+from typing import List, Dict
 
 
 class AzureTranslationClient(object):
@@ -16,14 +17,14 @@ class AzureTranslationClient(object):
         endpoint = 'https://api.cognitive.microsofttranslator.com'
         self.client = TextTranslationClient(endpoint=endpoint, credential=AzureKeyCredential(key), region=region)
 
-    def translate(self, row: pd.DataFrame, from_language: str, to_languages: [str]) -> [TranslatedTextItem]:
+    def translate(self, row: pd.DataFrame, from_language: str, to_languages: List[str]) -> List[TranslatedTextItem]:
         try:
             # Supported langauges - https://learn.microsoft.com/en-us/azure/ai-services/translator/language-support
-            content: [InputTextItem] = []
+            content: List[InputTextItem] = []
             for value in row.values:
                 text = InputTextItem(text=value)
                 content.append(text)
-            response: [TranslatedTextItem] = self.client.translate(
+            response: List[TranslatedTextItem] = self.client.translate(
                 body=content,
                 to_language=to_languages,
                 from_language=from_language

@@ -1,15 +1,16 @@
-from src.api.i_translate_api import ITranslateAPI
+from .i_translate_api import ITranslateAPI
 import pandas as pd
+from typing import List, Dict
 
 from src.client.aws_translation_client import AwsTranslateClient
 
 
 class AWSTranslateAPI(ITranslateAPI):
-    def __init__(self, from_language: str, to_languages: [str]):
+    def __init__(self, from_language: str, to_languages: List[str]):
         super().__init__(from_language, to_languages)
         self.client = AwsTranslateClient()
 
-    def translate(self, row: pd.DataFrame, column_names: [str]) -> {str: [pd.DataFrame]}:
+    def translate(self, row: pd.DataFrame, column_names: List[str]) -> Dict[str, pd.DataFrame]:
         result = {str: [pd.DataFrame]}
         for to_language in self.to_languages:
             result[to_language] = pd.DataFrame()
