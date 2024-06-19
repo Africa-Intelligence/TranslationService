@@ -11,15 +11,23 @@ class AzureTranslateAPI(ITranslateAPI):
         super().__init__(from_language, to_languages)
         self.client = AzureTranslationClient()
 
-    def translate(self, row: pd.DataFrame, column_names: List[str]) -> Dict[str, pd.DataFrame]:
-        response: List[TranslatedTextItem] = self.client.translate(row, self.from_language, self.to_languages)
+    def translate(
+        self, row: pd.DataFrame, column_names: List[str]
+    ) -> Dict[str, pd.DataFrame]:
+        response: List[TranslatedTextItem] = self.client.translate(
+            row, self.from_language, self.to_languages
+        )
         result = {str: [pd.DataFrame]}
         for to_language in self.to_languages:
             result[to_language] = pd.DataFrame()
         for col_index, colum_result in enumerate(response):
             for translation_index, translation in enumerate(colum_result.translations):
                 column_value = column_names[col_index]
-                result[translation.to].at[0, f'{self.from_language}-{column_value}'] = row.iloc[col_index]
-                result[translation.to].at[0, f'{translation.to}-{column_value}'] = translation.text
+                result[translation.to].at[0, f"{self.from_language}-{column_value}"] = (
+                    row.iloc[col_index]
+                )
+                result[translation.to].at[
+                    0, f"{translation.to}-{column_value}"
+                ] = translation.text
 
         return result

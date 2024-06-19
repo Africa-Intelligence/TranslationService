@@ -12,12 +12,16 @@ from typing import List, Dict
 class AzureTranslationClient(object):
     def __init__(self):
         load_dotenv()
-        key = os.getenv('AZURE_TRANSLATE_API_KEY')
-        region = os.getenv('AZURE_TRANSLATE_REGION')
-        endpoint = 'https://api.cognitive.microsofttranslator.com'
-        self.client = TextTranslationClient(endpoint=endpoint, credential=AzureKeyCredential(key), region=region)
+        key = os.getenv("AZURE_TRANSLATE_API_KEY")
+        region = os.getenv("AZURE_TRANSLATE_REGION")
+        endpoint = "https://api.cognitive.microsofttranslator.com"
+        self.client = TextTranslationClient(
+            endpoint=endpoint, credential=AzureKeyCredential(key), region=region
+        )
 
-    def translate(self, row: pd.DataFrame, from_language: str, to_languages: List[str]) -> List[TranslatedTextItem]:
+    def translate(
+        self, row: pd.DataFrame, from_language: str, to_languages: List[str]
+    ) -> List[TranslatedTextItem]:
         try:
             # Supported langauges - https://learn.microsoft.com/en-us/azure/ai-services/translator/language-support
             content: List[InputTextItem] = []
@@ -25,9 +29,7 @@ class AzureTranslationClient(object):
                 text = InputTextItem(text=value)
                 content.append(text)
             response: List[TranslatedTextItem] = self.client.translate(
-                body=content,
-                to_language=to_languages,
-                from_language=from_language
+                body=content, to_language=to_languages, from_language=from_language
             )
 
             return response

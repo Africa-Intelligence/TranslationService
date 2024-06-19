@@ -9,7 +9,9 @@ class OpusTranslateAPI(OpenSourceTranslateAPI):
         super().__init__(from_language, to_languages)
         self.models: Dict[str, OpusClient] = {}
         for to_language in to_languages:
-            self.models[to_language] = OpusClient(from_language=from_language, to_language=to_language)
+            self.models[to_language] = OpusClient(
+                from_language=from_language, to_language=to_language
+            )
 
     def _translate(self, text: str, to_language: str) -> str:
         result = ""

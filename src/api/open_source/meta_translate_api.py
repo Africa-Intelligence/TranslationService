@@ -13,6 +13,8 @@ class MetaTranslateAPI(OpenSourceTranslateAPI):
         result = ""
         chunks = self._get_chunks(text)
         for chunk in chunks:
-            translated_chunk = self.client.translate(chunk, from_language=self.from_language, to_language=to_language)
+            translated_chunk = self.client.translate(
+                chunk, from_language=self.from_language, to_language=to_language
+            )
             result += translated_chunk[0]
         return result

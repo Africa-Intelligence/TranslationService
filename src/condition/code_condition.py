@@ -1,21 +1,24 @@
 import pandas as pd
 
-class IRouter(object):
-    def __init__(self):
-        pass
+from src.llm.i_llm import ILLM
+from src.condition.i_condition import ICondition
 
-    def get_response(self, prompt: str) -> str:
-        pass
-    
-    def is_code(self, row: pd.DataFrame) -> str:
+
+class CodeCondition(ICondition):
+
+    def __init__(self, llm: ILLM):
+        self.llm = llm
+        self.TRUE_CONDITION = "yes"
+
+    def execute(self, row: pd.DataFrame) -> bool:
         """
         Returns Yes if the text contains code and No if it does not.
         """
-        text = row.str.cat(sep='\n')
+        text = row.str.cat(sep="\n")
         prompt = f"""
             I need you to analyze a question answer sequence of text and determine whether it contains code written 
             in any programming language. Please respond with "Yes" if the text contains code and 
-            "No" if it does not. All langauages are valid, including markup languages.
+            "No" if it does not. All languages are valid, including markup languages.
             Example 1:
                 Input: 
                     def hello_world():
@@ -35,5 +38,5 @@ class IRouter(object):
                     {text}
                 Output:                
             """
-        answer = self.get_response(prompt)
-        return answer
+        answer = self.llm.invoke(prompt)
+        return True if answer.lower() == self.TRUE_CONDITION else False
