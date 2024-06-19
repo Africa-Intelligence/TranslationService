@@ -13,43 +13,27 @@ class IRouter(object):
         """
         text = row.str.cat(sep='\n')
         prompt = f"""
-            You are given a question-answer sequence of text. Your task is to determine whether the text contains 
-            code written in any programming language, including markup languages. Respond with "Yes" if the text 
-            contains code and "No" if it does not. Do not provide any further explanation or justification. You must 
-            be able to handle code snippets in any programming language.
-            Examples:
-            Input:
-                def hello_world():
-                    print("Hello, world!")
-            Output: Yes
+            I need you to analyze a question answer sequence of text and determine whether it contains code written 
+            in any programming language. Please respond with "Yes" if the text contains code and 
+            "No" if it does not. All langauages are valid, including markup languages.
+            Example 1:
+                Input: 
+                    def hello_world():
+                        print("Hello, world!")
+                Output:
+                    Yes
+            Example 2:
+                Input:
+                    The quick brown fox jumps over the lazy dog.
+                Output:
+                    No
 
-            Input:
-                In a 16-bit system, the maximum value of an unsigned integer is 65535.
-            Output: No
-
-            Input:
-            <html>
-                <body>
-                    <h1>Hello, World!</h1>
-                </body>
-            </html>
-            Output: Yes
-
-            Input:
-            SELECT * FROM users WHERE age > 30;
-            Output: Yes
-
-            Input:
-            The denominator of 1/4 is 4
-            Output: No
-
-            Instruction:
-
+            It is important that you only answer with "Yes" or "No". No further explanation or justification
+            is needed. You should be robust enough to handle code snippets in any programming language.
             Now, analyze the following text:
-
-            Input:
-            {text}
-            Output:         
+                Input:
+                    {text}
+                Output:                
             """
         answer = self.get_response(prompt)
         return answer
