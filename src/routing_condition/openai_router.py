@@ -52,6 +52,6 @@ class OpenAIRouter(object):
                     {text}
                 Output:         
             """
-        answer = self.get_completion(prompt)
+        answer = self.get_response(prompt)
         return answer
     
