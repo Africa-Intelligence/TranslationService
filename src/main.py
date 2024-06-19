@@ -21,7 +21,7 @@ from src.routing_condition.ollama_router import OllamaRouter
 
 
 def run():
-    dataset_name = "tatsu-lab/alpaca"
+    dataset_name = "yahma/alpaca-cleaned"
     dataset = DatasetLoader(dataset_name)
     FROM_LANGUAGE = 'en'
     LANGUAGES_TO_TRANSLATE_TO = ['af']

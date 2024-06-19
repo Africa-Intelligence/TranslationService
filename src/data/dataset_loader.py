@@ -2,13 +2,16 @@ from datasets import load_dataset
 import pandas as pd
 import os
 
-
 class DatasetLoader(object):
     def __init__(self, dataset_name: str):
         dataset = load_dataset(dataset_name)
         df = pd.DataFrame(dataset['train'])
         # Drop text column
-        df = df.drop(columns=['text'])
+        if dataset_name == 'yahma/alpaca-cleaned':
+            new_order = ['instruction', 'input', 'output']
+            df = df[new_order]
+        elif dataset_name == 'yahma/alpaca':
+            df = df.drop(columns=['text'])
         self.dataset_name = dataset_name
         self.df = df
 
