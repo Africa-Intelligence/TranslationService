@@ -17,6 +17,7 @@ from src.data.dataset_loader import DatasetLoader
 import pandas as pd
 from typing import Dict
 from src.routing_condition.openai_router import OpenAIRouter
+from src.routing_condition.ollama_router import OllamaRouter
 
 
 def run():
@@ -26,11 +27,10 @@ def run():
     LANGUAGES_TO_TRANSLATE_TO = ['af']
     api: ITranslateAPI = AWSTranslateAPI(FROM_LANGUAGE, LANGUAGES_TO_TRANSLATE_TO)
     column_names = dataset.df.columns
-    router = OpenAIRouter()
+    router = OllamaRouter()
 
     for _, row in tqdm(dataset.df.iterrows(), colour='GREEN', total=dataset.df.shape[0]):
-        if router.is_code(row) == 'Yes':
-            print(row)
+        print(router.is_code(row))
         # result: Dict[str, pd.DataFrame] = api.translate(row=row, column_names=column_names)
         # for to_language in LANGUAGES_TO_TRANSLATE_TO:
         #     dataset.write_to_csv(result[to_language], to_language)
