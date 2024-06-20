@@ -11,5 +11,7 @@ class OpusClient(object):
     def translate(self, text) -> str:
         encoded_input = self.tokenizer(text, return_tensors="pt", padding=True)
         translated_tokens = self.model.generate(**encoded_input)
-        translated_text = self.tokenizer.batch_decode(translated_tokens, skip_special_tokens=True)[0]
+        translated_text = self.tokenizer.batch_decode(
+            translated_tokens, skip_special_tokens=True
+        )[0]
         return translated_text

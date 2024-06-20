@@ -27,6 +27,10 @@ Install python 3.12 with pyenv:
 pyenv install 3.12
 ```
 
+### 3. Ollama
+
+In order to use the ollama router, you must download Ollama from their website (https://ollama.com/)
+
 # Translation Clients
 ## Azure Translation API
 Microsoft Azure [Translation API](https://learn.microsoft.com/en-us/azure/ai-services/translator/text-translation-overview) is configured to be used as a translation service.
