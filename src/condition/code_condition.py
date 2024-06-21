@@ -10,14 +10,14 @@ class CodeCondition(ICondition):
     def __init__(self, llm: ILLM):
         self.llm = llm
         self.TRUE_CONDITION = "yes"
-        self.cache = Cache()
+        self.cache = Cache("africa-intelligence/alpaca-cleaned-annotated")
 
     def execute(self, row: pd.DataFrame) -> bool:
         """
         Returns Yes if the text contains code and No if it does not.
         """
-        if self.cache.contains(row, "code"):
-            return True if Cache().get(row, "code").lower() == self.TRUE_CONDITION else False
+        if self.cache.get(row, "code"):
+            return True if self.cache.get(row, "code").lower() == self.TRUE_CONDITION else False
         else:
             text = row.str.cat(sep="\n")
             prompt = f"""

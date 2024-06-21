@@ -22,9 +22,9 @@ from src.llm.ollama_llm import OllamaLLM
 from src.api.aws_translate_api import AWSTranslateAPI
 
 def run():
-    dataset_name = "africa-intelligence/alpaca-cleaned-annotated"
+    dataset_name = "yahma/alpaca-cleaned"
     dataset = DatasetLoader(dataset_name)
-    column_names = ["instruction", "input", "output"]
+    column_names = dataset.df.columns
     llm: ILLM = OllamaLLM()
     FROM_LANGUAGE = "en"
     LANGUAGES_TO_TRANSLATE_TO = ["af"]
@@ -37,7 +37,7 @@ def run():
     router: IRouter = AdvancedRouter(
         llm=llm, open_source_api=open_source_api, closed_source_api=closed_source_api
     )
-    for _, row in tqdm(dataset.df.iterrows(), total=dataset.df.shape[0]):
+    for index, row in tqdm(dataset.df.iterrows(), total=dataset.df.shape[0]):
         result: Dict[str, pd.DataFrame] = router.execute(
             row=row, column_names=column_names
         )
