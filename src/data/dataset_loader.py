@@ -13,6 +13,8 @@ class DatasetLoader(object):
             df = df[new_order]
         elif dataset_name == "yahma/alpaca":
             df = df.drop(columns=["text"])
+        elif dataset_name == "africa-intelligence/alpaca-cleaned-annotated":
+            df = df.map(lambda x: '' if x is None else x)
         self.dataset_name = dataset_name
         self.df = df
 
