@@ -16,8 +16,7 @@ ENV PYTHONFAULTHANDLER=1 \
 
 
 # System deps:
-RUN curl -sSL https://install.python-poetry.org | python3 - && \
-    ln -s /root/.local/bin/poetry /usr/local/bin/poetry
+RUN curl -sSL https://install.python-poetry.org | python3 -
 
 # Set the working directory in the container
 WORKDIR /src
@@ -25,8 +24,11 @@ WORKDIR /src
 # Copy the current directory contents into the container at /src
 COPY . .
 
+# Fix permissions for the src directory
+RUN chmod -R 755 /src
+
 # Install any needed packages using poetry
 RUN poetry install
 
 # Run the application
-CMD ["poetry", "run", "src/main.py"]
+CMD ["poetry", "run", "main.py"]

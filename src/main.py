@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import sys
 import os
 import pandas as pd
@@ -31,13 +32,14 @@ def run():
     closed_source_api: ITranslateAPI = AzureTranslateAPI(
         FROM_LANGUAGE, LANGUAGES_TO_TRANSLATE_TO
     )
-    open_source_api: ITranslateAPI = MetaTranslateAPI(
+    open_source_api: ITranslateAPI = OpusTranslateAPI(
         FROM_LANGUAGE, LANGUAGES_TO_TRANSLATE_TO
     )
     router: IRouter = AdvancedRouter(
         llm=llm, open_source_api=open_source_api, closed_source_api=closed_source_api
     )
-    for index, row in tqdm(dataset.df.iterrows(), total=dataset.df.shape[0]):
+    for i, row in tqdm(dataset.df.iterrows(), total=dataset.df.shape[0]):
+
         result: Dict[str, pd.DataFrame] = router.execute(
             row=row, column_names=column_names
         )
