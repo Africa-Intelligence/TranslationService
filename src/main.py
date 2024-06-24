@@ -58,7 +58,7 @@ def get_args():
 
     router_str = ""
     while router_str.lower() not in ["basic", "advanced"]:
-        router_str = input("Router to use (Simple or Advanced): ")
+        router_str = input("Router to use (Basic or Advanced): ")
         if router_str.lower() == "basic":
             router: IRouter = BasicRouter(
                 llm=llm, open_source_api=open_source_api, closed_source_api=closed_source_api
