@@ -37,8 +37,8 @@ def run():
     column_names = dataset.df.columns
     llm: ILLM = OllamaLLM()
 
-    FROM_LANGUAGE = get_env_var('FROM_LANGUAGES')
-    LANGUAGES_TO_TRANSLATE_TO = get_env_var('TO_LANGUAGES').split(',')
+    FROM_LANGUAGE = get_env_var('FROM_LANGUAGE')
+    LANGUAGES_TO_TRANSLATE_TO = get_env_var('LANGUAGES_TO_TRANSLATE_TO').split(',')
 
     CLOSED_SOURCE_API = get_env_var('CLOSED_SOURCE_API')
     if CLOSED_SOURCE_API.lower() == "aws":
