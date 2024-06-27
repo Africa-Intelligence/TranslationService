@@ -6,7 +6,9 @@ from dotenv import load_dotenv
 class AwsTranslateClient(object):
 
     def __init__(self):
-        load_dotenv()
+        # Load .env file if it exists (for local development)
+        if os.path.exists('.env'):
+            load_dotenv()
         self.client = boto3.client(
             "translate",
             use_ssl=True,
