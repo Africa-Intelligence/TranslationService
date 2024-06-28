@@ -2,7 +2,7 @@
 version: "2.0"
 services:
   translate-en-af:
-    image: chadbrouze1/translation-service-app:0.0.6
+    image: chadbrouze1/translation-service-app:0.1.0
     expose:
       - port: 80
         as: 80

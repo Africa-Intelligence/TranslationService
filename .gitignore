@@ -3,4 +3,3 @@ poetry.lock
 *.DS_STORE
 *.pyc
 *.csv
-.env
