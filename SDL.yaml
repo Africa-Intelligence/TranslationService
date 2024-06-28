@@ -1,0 +1,40 @@
+---
+version: "2.0"
+services:
+  translate-en-af:
+    image: chadbrouze1/translation-service-app:0.0.6
+    expose:
+      - port: 80
+        as: 80
+        to:
+          - global: true
+    env:
+      - AZURE_TRANSLATE_API_KEY=
+      - AZURE_TRANSLATE_REGION=
+      - POETRY_VIRTUALENVS_CREATE=false
+      - FROM_LANGUAGE=en
+      - LANGUAGES_TO_TRANSLATE_TO=af
+      - CLOSED_SOURCE_API=azure
+      - OPEN_SOURCE_API=opus
+      - ROUTER=advanced
+profiles:
+  compute:
+    translate-en-af:
+      resources:
+        cpu:
+          units: 16
+        memory:
+          size: 12GB
+        storage:
+          - size: 12GB
+  placement:
+    dcloud:
+      pricing:
+        translate-en-af:
+          denom: uakt
+          amount: 1000
+deployment:
+  translate-en-af:
+    dcloud:
+      profile: translate-en-af
+      count: 1

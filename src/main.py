@@ -4,6 +4,7 @@ import os
 import pandas as pd
 from typing import Dict
 from tqdm import tqdm
+import logging
 
 # Add the parent directory of `src` to the Python path
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -24,14 +25,39 @@ from src.llm.ollama_llm import OllamaLLM
 
 from src.api.aws_translate_api import AWSTranslateAPI
 
+# Function to log progress
+class TqdmToLogger:
+    def __init__(self, logger, level=logging.INFO):
+        self.logger = logger
+        self.level = level
+        self.last_message = None
+
+    def write(self, message):
+        message = message.strip()
+        if message != self.last_message:
+            self.last_message = message
+            self.logger.log(self.level, message)
+
+    def flush(self):
+        pass
+
 def get_env_var(name):
     value = os.environ.get(name)
     if not value:
-        print(f"Error: Environment variable '{name}' is required but not set.", file=sys.stderr)
+        logging.error(f"Error: Environment variable '{name}' is required but not set.")
         sys.exit(1)
     return value
     
 def run():
+    logging.basicConfig(
+        level=logging.INFO,
+        handlers=[
+            logging.FileHandler("process.log"),
+            logging.StreamHandler(sys.stdout)
+        ]
+    )
+    logger = logging.getLogger()
+
     dataset_name = "yahma/alpaca-cleaned"
     dataset = DatasetLoader(dataset_name)
     column_names = dataset.df.columns
@@ -70,7 +96,9 @@ def run():
             llm=llm, open_source_api=open_source_api, closed_source_api=closed_source_api
         )
 
-    for i, row in tqdm(dataset.df.iterrows(), total=dataset.df.shape[0]):
+    # Redirect tqdm output to logger
+    tqdm_out = TqdmToLogger(logger)
+    for i, row in tqdm(dataset.df.iterrows(), total=dataset.df.shape[0], file=tqdm_out):
 
         result: Dict[str, pd.DataFrame] = router.execute(
             row=row, column_names=column_names

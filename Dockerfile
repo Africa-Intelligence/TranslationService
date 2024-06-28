@@ -21,10 +21,13 @@ RUN curl -sSL https://install.python-poetry.org | python3 -
 # Set the working directory in the container
 WORKDIR /app
 
-# Copy the current directory contents into the container at /src
-COPY . .
+# Copy relevant files
+COPY pyproject.toml poetry.lock ./
+# Copy the main file separately to create a distinct cache layer
+COPY src/main.py src/
+COPY src ./src
 
-# Fix permissions for the src directory
+# Fix permissions for the app directory
 RUN chmod -R 755 /app
 
 # Install any needed packages using poetry
