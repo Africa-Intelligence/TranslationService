@@ -22,11 +22,11 @@ profiles:
     translate-en-af:
       resources:
         cpu:
-          units: 16
+          units: 8
         memory:
-          size: 12GB
+          size: 8GB
         storage:
-          - size: 12GB
+          - size: 8GB
   placement:
     dcloud:
       pricing:
