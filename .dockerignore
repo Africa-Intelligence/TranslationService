@@ -19,3 +19,6 @@ coverage.xml
 .mypy_cache
 .pytest_cache
 .hypothesis
+.env
+README.md
+SDL.yaml

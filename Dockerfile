@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-FROM python:3.12-bullseye
+FROM pytorch/pytorch:2.3.1-cuda11.8-cudnn8-devel
 
 ENV PYTHONFAULTHANDLER=1 \
   PYTHONUNBUFFERED=1 \
@@ -11,21 +11,19 @@ ENV PYTHONFAULTHANDLER=1 \
   POETRY_NO_INTERACTION=1 \
   POETRY_VIRTUALENVS_CREATE=false \
   POETRY_CACHE_DIR='/var/cache/pypoetry' \
-  POETRY_HOME='/usr/local' \
-  POETRY_VERSION=1.7.1
+  POETRY_HOME='/opt/poetry' \
+  POETRY_VERSION=1.7.1 \
+  PATH="/opt/poetry/bin:$PATH"
 
-
-# System deps:
-RUN curl -sSL https://install.python-poetry.org | python3 -
+# Install Poetry
+RUN pip install "poetry==$POETRY_VERSION"
+RUN poetry --version
 
 # Set the working directory in the container
 WORKDIR /app
 
 # Copy relevant files
-COPY pyproject.toml poetry.lock ./
-# Copy the main file separately to create a distinct cache layer
-COPY src/main.py src/
-COPY src ./src
+COPY . ./
 
 # Fix permissions for the app directory
 RUN chmod -R 755 /app
@@ -34,4 +32,4 @@ RUN chmod -R 755 /app
 RUN poetry install
 
 # Run the application
-CMD ["poetry", "run", "src/main.py"]
+CMD ["poetry", "run", "python", "src/main.py"]

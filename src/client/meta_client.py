@@ -8,7 +8,13 @@ class MetaClient(object):
         self.tokenizer = M2M100Tokenizer.from_pretrained(model_name)
         self.model = M2M100ForConditionalGeneration.from_pretrained(model_name)
         # Check if a GPU is available and move the model to the GPU
-        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        # Check for CUDA, MPS (M1), or fall back to CPU
+        if torch.cuda.is_available():
+            self.device = torch.device("cuda")
+        elif torch.backends.mps.is_available():
+            self.device = torch.device("mps")
+        else:
+            self.device = torch.device("cpu")
         self.model.to(self.device)
 
     def translate(self, text, from_language: str, to_language: str) -> str:
