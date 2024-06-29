@@ -1,21 +1,16 @@
-import os
 import boto3
-from dotenv import load_dotenv
 
 
 class AwsTranslateClient(object):
 
-    def __init__(self):
-        # Load .env file if it exists (for local development)
-        if os.path.exists('.env'):
-            load_dotenv()
+    def __init__(self, aws_access_key_id: str, aws_secret_access_key: str, aws_session_token: str, region_name: str):
         self.client = boto3.client(
             "translate",
             use_ssl=True,
-            region_name=os.getenv("AWS_REGION"),
-            aws_access_key_id=os.getenv("AWS_ACCESS_KEY"),
-            aws_secret_access_key=os.getenv("AWS_SECRET_KEY"),
-            aws_session_token=os.getenv("AWS_SESSION_TOKEN"),
+            aws_access_key_id=aws_access_key_id,
+            aws_secret_access_key=aws_secret_access_key,
+            aws_session_token=aws_session_token,
+            region_name=region_name,
         )
 
     def translate(self, text: str, from_language: str, to_language: str):

@@ -2,9 +2,16 @@
 import sys
 import os
 import pandas as pd
-from typing import Dict
+from typing import Dict, Optional
+
+from dotenv import dotenv_values
 from tqdm import tqdm
 import logging
+
+from src.condition.code_condition import CodeCondition
+from src.condition.i_condition import ICondition
+from src.factory.router_provider import RouterProvider
+from src.factory.translate_api_provider import TranslateAPIProvider
 
 # Add the parent directory of `src` to the Python path
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -25,6 +32,7 @@ from src.llm.ollama_llm import OllamaLLM
 
 from src.api.aws_translate_api import AWSTranslateAPI
 
+
 # Function to log progress
 class TqdmToLogger:
     def __init__(self, logger, level=logging.INFO):
@@ -41,13 +49,7 @@ class TqdmToLogger:
     def flush(self):
         pass
 
-def get_env_var(name):
-    value = os.environ.get(name)
-    if not value:
-        logging.error(f"Error: Environment variable '{name}' is required but not set.")
-        sys.exit(1)
-    return value
-    
+
 def run():
     logging.basicConfig(
         level=logging.INFO,
@@ -58,52 +60,31 @@ def run():
     )
     logger = logging.getLogger()
 
-    dataset_name = "yahma/alpaca-cleaned"
-    dataset = DatasetLoader(dataset_name)
-    column_names = dataset.df.columns
-    llm: ILLM = OllamaLLM()
+    dataset = DatasetLoader("yahma/alpaca-cleaned")
+    api_provider = TranslateAPIProvider()
+    env_vars: Dict[str, Optional[str]] = dotenv_values("../.env")
+    env_vars['TO_LANGUAGES'] = env_vars['TO_LANGUAGES'].split(',')
 
-    FROM_LANGUAGE = get_env_var('FROM_LANGUAGE')
-    LANGUAGES_TO_TRANSLATE_TO = get_env_var('LANGUAGES_TO_TRANSLATE_TO').split(',')
-
-    CLOSED_SOURCE_API = get_env_var('CLOSED_SOURCE_API')
-    if CLOSED_SOURCE_API.lower() == "aws":
-        closed_source_api: ITranslateAPI = AWSTranslateAPI(
-            FROM_LANGUAGE, LANGUAGES_TO_TRANSLATE_TO
-        )
-    elif CLOSED_SOURCE_API.lower() == "azure":
-        closed_source_api: ITranslateAPI = AzureTranslateAPI(
-            FROM_LANGUAGE, LANGUAGES_TO_TRANSLATE_TO
-        )
-
-    OPEN_SOURCE_API = get_env_var('OPEN_SOURCE_API')
-    if OPEN_SOURCE_API.lower() == "meta":
-        open_source_api: ITranslateAPI = MetaTranslateAPI(
-            FROM_LANGUAGE, LANGUAGES_TO_TRANSLATE_TO
-        )
-    elif OPEN_SOURCE_API.lower() == "opus":
-        open_source_api: ITranslateAPI = OpusTranslateAPI(
-            FROM_LANGUAGE, LANGUAGES_TO_TRANSLATE_TO
-        )
-
-    ROUTER = get_env_var('ROUTER')
-    if ROUTER.lower() == "basic":
-        router: IRouter = BasicRouter(
-            llm=llm, open_source_api=open_source_api, closed_source_api=closed_source_api
-        )
-    elif ROUTER.lower() == "advanced":
-        router: IRouter = AdvancedRouter(
-            llm=llm, open_source_api=open_source_api, closed_source_api=closed_source_api
-        )
+    router: IRouter
+    if env_vars['ROUTER'].lower() == "basic":
+        api = api_provider.get(env_vars.get("OPEN_SOURCE_API"), **env_vars)
+        router = BasicRouter(api)
+    else:
+        llm: ILLM = OllamaLLM()
+        code_condition: ICondition = CodeCondition(llm)
+        open_source_api = api_provider.get(env_vars.get("OPEN_SOURCE_API"), **env_vars)
+        closed_source_api = api_provider.get(env_vars.get("CLOSED_SOURCE_API"), **env_vars)
+        router = AdvancedRouter(code_condition, open_source_api, closed_source_api)
 
     # Redirect tqdm output to logger
     tqdm_out = TqdmToLogger(logger)
     for i, row in tqdm(dataset.df.iterrows(), total=dataset.df.shape[0], file=tqdm_out):
 
         result: Dict[str, pd.DataFrame] = router.execute(
-            row=row, column_names=column_names
+            row=row, column_names=dataset.df.columns
         )
-        for to_language in LANGUAGES_TO_TRANSLATE_TO:
+        for to_language in env_vars["TO_LANGUAGES"]:
             dataset.write_to_csv(result[to_language], to_language)
+
 
 run()

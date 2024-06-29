@@ -5,17 +5,11 @@ from azure.ai.translation.text import TextTranslationClient
 from azure.core.credentials import AzureKeyCredential
 import pandas as pd
 from azure.core.exceptions import HttpResponseError
-from dotenv import load_dotenv
-from typing import List, Dict
+from typing import List
 
 
 class AzureTranslationClient(object):
-    def __init__(self):
-        # Load .env file if it exists (for local development)
-        if os.path.exists('.env'):
-            load_dotenv()
-        key = os.getenv("AZURE_TRANSLATE_API_KEY")
-        region = os.getenv("AZURE_TRANSLATE_REGION")
+    def __init__(self, key: str, region: str):
         endpoint = "https://api.cognitive.microsofttranslator.com"
         self.client = TextTranslationClient(
             endpoint=endpoint, credential=AzureKeyCredential(key), region=region
