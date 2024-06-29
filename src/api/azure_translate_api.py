@@ -7,9 +7,9 @@ from typing import List, Dict
 
 
 class AzureTranslateAPI(ITranslateAPI):
-    def __init__(self, from_language: str, to_languages: List[str]):
+    def __init__(self, from_language: str, to_languages: List[str], key: str, region: str):
         super().__init__(from_language, to_languages)
-        self.client = AzureTranslationClient()
+        self.client = AzureTranslationClient(key, region)
 
     def translate(
         self, row: pd.DataFrame, column_names: List[str]

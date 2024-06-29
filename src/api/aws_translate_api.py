@@ -6,9 +6,10 @@ from src.client.aws_translation_client import AwsTranslateClient
 
 
 class AWSTranslateAPI(ITranslateAPI):
-    def __init__(self, from_language: str, to_languages: List[str]):
+    def __init__(self, from_language: str, to_languages: List[str], aws_access_key_id: str, aws_secret_access_key: str,
+                 aws_session_token: str, region_name: str):
         super().__init__(from_language, to_languages)
-        self.client = AwsTranslateClient()
+        self.client = AwsTranslateClient(aws_access_key_id, aws_secret_access_key, aws_session_token, region_name)
 
     def translate(
         self, row: pd.DataFrame, column_names: List[str]

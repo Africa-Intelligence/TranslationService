@@ -7,7 +7,9 @@ from src.condition.i_condition import ICondition
 class OpenAILLM(ICondition):
     def __init__(self, model: str = "gpt-4o"):
         super().__init__()
-        load_dotenv()
+        # Load .env file if it exists (for local development)
+        if os.path.exists('.env'):
+            load_dotenv()
         self.model = model
         self.client = OpenAI(
             # This is the default and can be omitted
