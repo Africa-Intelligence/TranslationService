@@ -13,7 +13,7 @@ services:
       - AZURE_TRANSLATE_REGION=
       - POETRY_VIRTUALENVS_CREATE=false
       - FROM_LANGUAGE=en
-      - LANGUAGES_TO_TRANSLATE_TO=af
+      - TO_LANGUAGES=af
       - CLOSED_SOURCE_API=azure
       - OPEN_SOURCE_API=opus
       - ROUTER=advanced
