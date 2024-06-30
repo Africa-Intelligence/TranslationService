@@ -12,7 +12,3 @@ class TranslateAPIProvider(IObjectFactory):
         self.register_builder("azure", AzureTranslateAPIBuilder())
         self.register_builder("opus", OpusTranslateAPIBuilder())
         self.register_builder("meta", MetaTranslateAPIBuilder())
-
-    def get(self, key, **kwargs):
-        return self.create(key, **kwargs)
-

@@ -10,3 +10,6 @@ class IObjectFactory(object):
         if not builder:
             raise ValueError(key)
         return builder(**kwargs)
+
+    def get(self, key, **kwargs):
+        return self.create(key, **kwargs)
