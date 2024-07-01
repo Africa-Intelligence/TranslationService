@@ -1,46 +1,95 @@
-from typing import List, Dict
-
+from typing import List, Dict, Tuple
 import pandas as pd
-from langchain_core.documents import Document
-from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 from src.api.i_translate_api import ITranslateAPI
-
+from src.api.open_source.translation_data import TranslationData
 
 class OpenSourceTranslateAPI(ITranslateAPI):
-    def __init__(self, from_language, to_languages):
+    def __init__(self, from_language: str, to_languages: List[str]):
         super().__init__(from_language, to_languages)
-        self.text_splitter = RecursiveCharacterTextSplitter(
-            chunk_size=512,
-            chunk_overlap=20,
-            length_function=len,
-        )
 
     def translate(
-        self, row: pd.DataFrame, column_names: List[str]
+        self, batch: pd.DataFrame, column_names: List[str]
     ) -> Dict[str, pd.DataFrame]:
-        result = {str: [pd.DataFrame]}
-        for to_language in self.to_languages:
-            result[to_language] = pd.DataFrame()
+        if batch.empty:
+            return {to_language: pd.DataFrame() for to_language in self.to_languages}
+        
+        result = {}
+        flattened_content, positions = self._flatten(batch, column_names)
 
         for to_language in self.to_languages:
-            for col_index, column_name in enumerate(column_names):
-                original_text = row.iloc[col_index]
-                translation = (
-                    self._translate(original_text, to_language)
-                    if original_text != ""
-                    else original_text
-                )
-                result[to_language].at[
-                    0, f"{self.from_language}-{column_name}"
-                ] = original_text
-                result[to_language].at[0, f"{to_language}-{column_name}"] = translation
+            translations = self._translate(flattened_content, to_language)
+            translation_data = TranslationData(
+                column_names=column_names,
+                positions=positions,
+                original_content=flattened_content,
+                translated_content=translations,
+                from_language=self.from_language,
+                to_language=to_language
+            )
+
+            translated_df = self._reconstruct_dataframe(translation_data)
+            result[to_language] = translated_df
 
         return result
 
-    def _translate(self, text: str, to_language: str) -> str:
-        pass
+    def _translate(self, batch: List[str], to_language: str) -> List[str]:
+        raise NotImplementedError
 
-    def _get_chunks(self, text) -> List[str]:
-        chunks: List[Document] = self.text_splitter.create_documents([text])
-        return [chunk.page_content for chunk in chunks]
+    def _flatten(self, df: pd.DataFrame, column_names: List[str]
+    ) -> Tuple[List[str], List[Tuple[int, str]]]:
+        flattened_non_empty_content = []
+        positions = []
+
+        for col in column_names:
+            for row_index, text in enumerate(df[col]):
+                if text != "":
+                    flattened_non_empty_content.append(text)
+                    positions.append((row_index, col))
+
+        return flattened_non_empty_content, positions
+
+    def _reconstruct_dataframe(self, data: TranslationData) -> pd.DataFrame:
+        new_columns = []
+        for col in data.column_names:
+            new_columns.append(f"{data.from_language}-{col}")
+            new_columns.append(f"{data.to_language}-{col}")
+        df = pd.DataFrame(columns=new_columns)
+
+        combined_data = zip(data.positions, data.original_content, data.translated_content)
+        for position, original_text, translated_text in combined_data:
+            row_index, column_name = position
+
+            original_column_name = f"{data.from_language}-{column_name}"
+            translated_column_name = f"{data.to_language}-{column_name}"
+            df.at[row_index, original_column_name] = original_text
+            df.at[row_index, translated_column_name] = translated_text
+
+        return df
+
+if __name__ == "__main__":
+    import pandas as pd
+    from src.api.open_source.opus_translate_api import OpusTranslateAPI
+
+    # Create a sample DataFrame
+    data = {
+        'text1': ['Hello, world!', 'How are you?', 'Python is great'],
+        'text2': ['OpenAI is impressive', 'Machine learning is fun', 'Translate this sentence']
+    }
+    df = pd.DataFrame(data)
+
+    print("Original DataFrame:")
+    print(df)
+
+    # Initialize OpusTranslateAPI
+    translator = OpusTranslateAPI(from_language='en', to_languages=['fr', 'es'])
+
+    # Translate the DataFrame
+    result = translator.translate(df, column_names=['text1', 'text2'])
+
+    # Print the results
+    for lang, translated_df in result.items():
+        print(f"\nTranslations to {lang}:")
+        print(translated_df)
+
+    print("\nTranslation completed.")

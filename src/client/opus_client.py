@@ -17,5 +17,5 @@ class OpusClient(object):
             self.device = torch.device("cpu")
         self.pipe = pipeline(task="translation", model=model_name, device=self.device)
 
-    def translate(self, text: List[str]) -> [str]:
-        return self.pipe(text)
+    def translate(self, batch: List[str]) -> [str]:
+        return self.pipe(batch)
