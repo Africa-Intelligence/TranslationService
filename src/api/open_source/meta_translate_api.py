@@ -10,5 +10,6 @@ class MetaTranslateAPI(OpenSourceTranslateAPI):
         self.client: MetaClient = MetaClient()
 
     def _translate(self, batch: List[str], to_language: str) -> List[str]:
-        result = self.client.translate(batch)
+        result = self.client.translate(
+            batch, from_language=self.from_language, to_language=to_language)
         return result

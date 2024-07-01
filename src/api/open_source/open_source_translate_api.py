@@ -15,7 +15,7 @@ class OpenSourceTranslateAPI(ITranslateAPI):
             return {to_language: pd.DataFrame() for to_language in self.to_languages}
         
         result = {}
-        flattened_content, positions = self._flatten(batch, column_names)
+        flattened_content, positions = self._flatten_dataframe(batch, column_names)
 
         for to_language in self.to_languages:
             translations = self._translate(flattened_content, to_language)
@@ -36,7 +36,7 @@ class OpenSourceTranslateAPI(ITranslateAPI):
     def _translate(self, batch: List[str], to_language: str) -> List[str]:
         raise NotImplementedError
 
-    def _flatten(self, df: pd.DataFrame, column_names: List[str]
+    def _flatten_dataframe(self, df: pd.DataFrame, column_names: List[str]
     ) -> Tuple[List[str], List[Tuple[int, str]]]:
         flattened_non_empty_content = []
         positions = []
@@ -66,30 +66,3 @@ class OpenSourceTranslateAPI(ITranslateAPI):
             df.at[row_index, translated_column_name] = translated_text
 
         return df
-
-if __name__ == "__main__":
-    import pandas as pd
-    from src.api.open_source.opus_translate_api import OpusTranslateAPI
-
-    # Create a sample DataFrame
-    data = {
-        'text1': ['Hello, world!', 'How are you?', 'Python is great'],
-        'text2': ['OpenAI is impressive', 'Machine learning is fun', 'Translate this sentence']
-    }
-    df = pd.DataFrame(data)
-
-    print("Original DataFrame:")
-    print(df)
-
-    # Initialize OpusTranslateAPI
-    translator = OpusTranslateAPI(from_language='en', to_languages=['fr', 'es'])
-
-    # Translate the DataFrame
-    result = translator.translate(df, column_names=['text1', 'text2'])
-
-    # Print the results
-    for lang, translated_df in result.items():
-        print(f"\nTranslations to {lang}:")
-        print(translated_df)
-
-    print("\nTranslation completed.")
