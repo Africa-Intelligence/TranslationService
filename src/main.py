@@ -58,10 +58,10 @@ def run():
     router: IRouter
     config: Dict[str, Optional[str]]
 
-    if os.path.exists(".env"):
+    try:
         environment = LocalEnvironment()
         config = environment.config
-    else:
+    except FileNotFoundError:
         environment = DockerEnvironment()
         config = environment.config
 
