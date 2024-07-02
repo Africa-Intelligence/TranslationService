@@ -13,9 +13,6 @@ class CodeCondition(ICondition):
         self.cache = Cache("africa-intelligence/alpaca-cleaned-annotated")
 
     def execute(self, row: pd.DataFrame) -> bool:
-        """
-        Returns Yes if the text contains code and No if it does not.
-        """
         if self.cache.get(row, "code"):
             return True if self.cache.get(row, "code").lower() == self.TRUE_CONDITION else False
         else:

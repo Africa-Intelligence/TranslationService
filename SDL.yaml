@@ -17,6 +17,7 @@ services:
       - CLOSED_SOURCE_API=azure
       - OPEN_SOURCE_API=opus
       - ROUTER=advanced
+      - BATCH_SIZE=16
 profiles:
   compute:
     translate-en-af:
