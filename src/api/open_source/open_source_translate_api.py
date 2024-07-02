@@ -1,8 +1,8 @@
-from typing import List, Dict, Tuple
+from typing import List, Dict
 import pandas as pd
 
 from src.api.i_translate_api import ITranslateAPI
-from src.api.open_source.translation_data import TranslationData
+from src.api.translation_data import TranslationData
 
 class OpenSourceTranslateAPI(ITranslateAPI):
     def __init__(self, from_language: str, to_languages: List[str]):
@@ -35,34 +35,3 @@ class OpenSourceTranslateAPI(ITranslateAPI):
 
     def _translate(self, batch: List[str], to_language: str) -> List[str]:
         raise NotImplementedError
-
-    def _flatten_dataframe(self, df: pd.DataFrame, column_names: List[str]
-    ) -> Tuple[List[str], List[Tuple[int, str]]]:
-        flattened_non_empty_content = []
-        positions = []
-
-        for col in column_names:
-            for row_index, text in enumerate(df[col]):
-                if text != "":
-                    flattened_non_empty_content.append(text)
-                    positions.append((row_index, col))
-
-        return flattened_non_empty_content, positions
-
-    def _reconstruct_dataframe(self, data: TranslationData) -> pd.DataFrame:
-        new_columns = []
-        for col in data.column_names:
-            new_columns.append(f"{data.from_language}-{col}")
-            new_columns.append(f"{data.to_language}-{col}")
-        df = pd.DataFrame(columns=new_columns)
-
-        combined_data = zip(data.positions, data.original_content, data.translated_content)
-        for position, original_text, translated_text in combined_data:
-            row_index, column_name = position
-
-            original_column_name = f"{data.from_language}-{column_name}"
-            translated_column_name = f"{data.to_language}-{column_name}"
-            df.at[row_index, original_column_name] = original_text
-            df.at[row_index, translated_column_name] = translated_text
-
-        return df

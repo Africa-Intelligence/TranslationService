@@ -16,14 +16,11 @@ class AzureTranslationClient(object):
         )
 
     def translate(
-        self, row: pd.DataFrame, from_language: str, to_languages: List[str]
+        self, batch: List[str], from_language: str, to_languages: List[str]
     ) -> List[TranslatedTextItem]:
         try:
             # Supported langauges - https://learn.microsoft.com/en-us/azure/ai-services/translator/language-support
-            content: List[InputTextItem] = []
-            for value in row.values:
-                text = InputTextItem(text=value)
-                content.append(text)
+            content: List[InputTextItem] = [InputTextItem(text=value) for value in batch]
             response: List[TranslatedTextItem] = self.client.translate(
                 body=content, to_language=to_languages, from_language=from_language
             )
