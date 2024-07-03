@@ -26,13 +26,13 @@ class DatasetLoader(object):
         )
 
     @staticmethod
-    def reorder_columns_alpaca_cleaned(example):
+    def reorder_columns_alpaca_cleaned(row):
         return {
-            "instruction": example["instruction"],
-            "input": example["input"],
-            "output": example["output"]
+            "instruction": row["instruction"],
+            "input": row["input"],
+            "output": row["output"]
         }
 
     @staticmethod
-    def replace_none_with_empty_string(example):
-        return {k: '' if v is None else v for k, v in example.items()}
+    def replace_none_with_empty_string(row):
+        return {key: value or '' for key, value in row.items()}

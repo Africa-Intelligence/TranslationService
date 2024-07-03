@@ -3,9 +3,7 @@ from typing import List, Dict
 import pandas as pd
 
 from src.api.i_translate_api import ITranslateAPI
-from src.condition.code_condition import CodeCondition
 from src.condition.i_condition import ICondition
-from src.llm.i_llm import ILLM
 from src.router.i_router import IRouter
 
 

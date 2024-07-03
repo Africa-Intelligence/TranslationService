@@ -14,14 +14,13 @@ class LocalEnvironment(IEnvironment):
 
     @staticmethod
     def _load_env_vars() -> Dict[str, Optional[str]]:
-        possible_paths = [
-            ".env",
-            "../.env",
-            "../../.env",
-            os.path.join(os.path.dirname(__file__), ".env"),
-            os.path.join(os.path.dirname(__file__), "../.env"),
-        ]
-        for path in possible_paths:
-            if os.path.exists(path):
-                return dotenv_values(path)
-        raise FileNotFoundError("Could not find .env file in any of the expected locations.")
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        while current_dir != os.path.dirname(current_dir):  # Stop at the root directory
+            if os.path.exists(os.path.join(current_dir, 'README.md')):
+                env_file = os.path.join(current_dir, '.env')
+                if os.path.exists(env_file):
+                    return dotenv_values(env_file)
+                else:
+                    raise FileNotFoundError(f".env file not found in the project root: {current_dir}")
+            current_dir = os.path.dirname(current_dir)
+        raise FileNotFoundError("Could not find project root")

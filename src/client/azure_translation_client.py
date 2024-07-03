@@ -3,10 +3,9 @@ import os
 from azure.ai.translation.text.models import InputTextItem, TranslatedTextItem
 from azure.ai.translation.text import TextTranslationClient
 from azure.core.credentials import AzureKeyCredential
-import pandas as pd
 from azure.core.exceptions import HttpResponseError
 from typing import List
-
+import logging
 
 class AzureTranslationClient(object):
     def __init__(self, key: str, region: str):
@@ -14,6 +13,7 @@ class AzureTranslationClient(object):
         self.client = TextTranslationClient(
             endpoint=endpoint, credential=AzureKeyCredential(key), region=region
         )
+        logging.getLogger('azure.core.pipeline.policies.http_logging_policy').setLevel(logging.WARNING)
 
     def translate(
         self, batch: List[str], from_language: str, to_languages: List[str]

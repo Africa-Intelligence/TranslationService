@@ -3,22 +3,20 @@ import sys
 import os
 import pandas as pd
 from typing import Dict, Optional
-
 from tqdm import tqdm
 import logging
-
-from src.condition.code_condition import CodeCondition
-from src.condition.size_condition import SizeCondition
-from src.condition.i_condition import ICondition
-from src.environment.docker_environment import DockerEnvironment
-from src.environment.local_environment import LocalEnvironment
-from src.factory.translate_api_provider import TranslateAPIProvider
 
 # Add the parent directory of `src` to the Python path
 current_dir = os.path.dirname(os.path.abspath(__file__))
 parent_dir = os.path.abspath(os.path.join(current_dir, os.pardir))
 sys.path.insert(0, parent_dir)
 
+from src.condition.code_condition import CodeCondition
+from condition.min_chars_condition import MinCharsCondition
+from src.condition.i_condition import ICondition
+from src.environment.docker_environment import DockerEnvironment
+from src.environment.local_environment import LocalEnvironment
+from src.factory.translate_api_provider import TranslateAPIProvider
 from src.llm.i_llm import ILLM
 from src.router.basic_router import BasicRouter
 from src.router.advanced_router import AdvancedRouter
@@ -71,7 +69,7 @@ def run():
     else:
         llm: ILLM = OllamaLLM()
         code_condition: ICondition = CodeCondition(llm)
-        size_condition: ICondition = SizeCondition(num_chars=1000)
+        size_condition: ICondition = MinCharsCondition(min_chars=512)
         open_source_api = api_provider.get(config.get("OPEN_SOURCE_API"), **config)
         closed_source_api = api_provider.get(config.get("CLOSED_SOURCE_API"), **config)
         router = AdvancedRouter([code_condition, size_condition], open_source_api, closed_source_api)
@@ -82,7 +80,8 @@ def run():
 
     for i, batch in enumerate(tqdm(dataset_loader.dataset.iter(batch_size=batch_size), total=total_batches, file=tqdm_out)):
         batch_df = pd.DataFrame(batch)
-        batch_df.index = range(i * batch_size, i * batch_size + len(batch_df))
+        offset = i * batch_size
+        batch_df.index = range(offset, offset + len(batch_df))
         result: Dict[str, pd.DataFrame] = router.execute(
             batch=batch_df, column_names=dataset_loader.df.columns
         )

@@ -20,5 +20,4 @@ class MetaClient(object):
 
     def translate(self, batch: List[str], from_language: str, to_language: str) -> str:
         result = self.pipe(batch, src_lang=from_language, tgt_lang=to_language)
-        translations = [item['translation_text'] for item in result]
-        return translations
+        return [item['translation_text'] for item in result]
