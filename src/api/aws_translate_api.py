@@ -3,7 +3,7 @@ import pandas as pd
 from typing import List, Dict
 
 from src.client.aws_translation_client import AwsTranslateClient
-from api.translation_result import TranslationResult
+from src.api.translation_result import TranslationResult
 
 
 class AWSTranslateAPI(ITranslateAPI):

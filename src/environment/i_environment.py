@@ -8,30 +8,34 @@ class IEnvironment(object):
         self.keys = None
 
     def __call__(self, key, *args, **kwargs):
-        self.keys = [key.value for key in ENVIRONMENT_VARIABLES]
+        self.keys = [key.value for key in EnvVar]
         return self.config[key]
 
     def set_config(self, config):
         self.config = config
 
-    def get_value(self, key):
-        return self.config[key]
+    def get_value(self, key: str):
+        value = self.config[key]
+        if value == "":
+            raise ValueError(key)
+        return value
 
 
-class ENV_VARS(Enum):
-    AZURE_TRANSLATE_API_KEY = "AZURE_TRANSLATE_API_KEY"
-    AZURE_TRANSLATE_REGION = "AZURE_TRANSLATE_REGION"
-    AWS_REGION = "AWS_REGION"
-    AWS_ACCESS_KEY = "AWS_ACCESS_KEY"
-    AWS_SECRET_KEY = "AWS_SECRET_KEY"
-    AWS_SESSION_TOKEN = "AWS_SESSION_TOKEN"
-    OPENAI_API_KEY = "OPENAI_API_KEY"
-    POETRY_VIRTUALENVS_CREATE = "POETRY_VIRTUALENVS_CREATE"
-    FROM_LANGUAGE = "FROM_LANGUAGE"
-    TO_LANGUAGES = "TO_LANGUAGES"
-    ROUTER = "ROUTER"
-    CLOSED_SOURCE_API = "CLOSED_SOURCE_API"
-    OPEN_SOURCE_API = "OPEN_SOURCE_API"
-    BATCH_SIZE = "BATCH_SIZE"
-    CONDITIONS = "CONDITIONS"
+class EnvVar(Enum):
+    AzureTranslateApiKey = "AZURE_TRANSLATE_API_KEY"
+    AzureTranslateRegion = "AZURE_TRANSLATE_REGION"
+    AWSRegion = "AWS_REGION"
+    AWSAccessKey = "AWS_ACCESS_KEY"
+    AwsSecretKey = "AWS_SECRET_KEY"
+    AWSSessionToken = "AWS_SESSION_TOKEN"
+    OpenAIAPIKey = "OPENAI_API_KEY"
+    PoetryVirtualEnvsCreate = "POETRY_VIRTUALENVS_CREATE"
+    FromLanguage = "FROM_LANGUAGE"
+    ToLanguages = "TO_LANGUAGES"
+    Router = "ROUTER"
+    ClosedSourceAPI = "CLOSED_SOURCE_API"
+    OpenSourceAPI = "OPEN_SOURCE_API"
+    BatchSize = "BATCH_SIZE"
     LLM = "LLM"
+    Conditions = "CONDITIONS"
+    MinCharLength = "MIN_CHAR_LENGTH"

@@ -2,14 +2,15 @@ from typing import List, Dict
 import pandas as pd
 
 from src.api.i_translate_api import ITranslateAPI
-from api.translation_result import TranslationResult
+from src.api.translation_result import TranslationResult
+
 
 class OpenSourceTranslateAPI(ITranslateAPI):
     def __init__(self, from_language: str, to_languages: List[str]):
         super().__init__(from_language, to_languages)
 
     def translate(
-        self, batch: pd.DataFrame, column_names: List[str]
+            self, batch: pd.DataFrame, column_names: List[str]
     ) -> Dict[str, pd.DataFrame]:
         result = {}
         flattened_content, positions = self._flatten_dataframe(batch, column_names)

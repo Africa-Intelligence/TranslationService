@@ -1,15 +1,12 @@
-from src.factory.condition_provider import ConditionProvider
+from src.factory.i_builder import IBuilder
 from src.router.advanced_router import AdvancedRouter
 
 
-class AdvancedRouterBuilder(object):
+class AdvancedRouterBuilder(IBuilder):
     def __init__(self):
-        self._instance: AdvancedRouter|None = None
-        self.open_source_api = None
-        self.closed_source_api = None
-        self.condition = None
+        super().__init__()
 
-    def __call__(self, open_source_api, closed_source_api, condition, **kwargs):
+    def __call__(self, conditions, open_source_api, closed_source_api):
         if not self._instance:
-            self._instance = AdvancedRouter(self.open_source_api, closed_source_api, condition)
+            self._instance = AdvancedRouter(conditions, open_source_api, closed_source_api)
         return self._instance
