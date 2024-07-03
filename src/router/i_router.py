@@ -6,6 +6,6 @@ import pandas as pd
 class IRouter(object):
 
     def execute(
-        self, row: pd.DataFrame, column_names: List[str]
+        self, batch: pd.DataFrame, column_names: List[str]
     ) -> Dict[str, pd.DataFrame]:
-        pass
+        raise NotImplementedError

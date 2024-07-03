@@ -1,5 +1,7 @@
+from typing import List
 from transformers import M2M100ForConditionalGeneration, M2M100Tokenizer
 import torch
+from transformers import pipeline
 
 class MetaClient(object):
     def __init__(self):
@@ -7,7 +9,6 @@ class MetaClient(object):
         model_name = "facebook/m2m100_418M"
         self.tokenizer = M2M100Tokenizer.from_pretrained(model_name)
         self.model = M2M100ForConditionalGeneration.from_pretrained(model_name)
-        # Check if a GPU is available and move the model to the GPU
         # Check for CUDA, MPS (M1), or fall back to CPU
         if torch.cuda.is_available():
             self.device = torch.device("cuda")
@@ -15,15 +16,8 @@ class MetaClient(object):
             self.device = torch.device("mps")
         else:
             self.device = torch.device("cpu")
-        self.model.to(self.device)
+        self.pipe = pipeline(task="translation", model=self.model, tokenizer=self.tokenizer, device=self.device)
 
-    def translate(self, text, from_language: str, to_language: str) -> str:
-        self.tokenizer.src_lang = from_language
-        encoded_input = self.tokenizer(text, return_tensors="pt", padding=True).to(self.device)
-        generated_tokens = self.model.generate(
-            **encoded_input, forced_bos_token_id=self.tokenizer.get_lang_id(to_language)
-        )
-        translated_text = self.tokenizer.batch_decode(
-            generated_tokens, skip_special_tokens=True
-        )
-        return translated_text
+    def translate(self, batch: List[str], from_language: str, to_language: str) -> str:
+        result = self.pipe(batch, src_lang=from_language, tgt_lang=to_language)
+        return [item['translation_text'] for item in result]

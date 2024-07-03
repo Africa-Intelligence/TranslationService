@@ -1,8 +1,9 @@
-from .i_translate_api import ITranslateAPI
+from src.api.i_translate_api import ITranslateAPI
 import pandas as pd
 from typing import List, Dict
 
 from src.client.aws_translation_client import AwsTranslateClient
+from api.translation_result import TranslationResult
 
 
 class AWSTranslateAPI(ITranslateAPI):
@@ -12,27 +13,31 @@ class AWSTranslateAPI(ITranslateAPI):
         self.client = AwsTranslateClient(aws_access_key_id, aws_secret_access_key, aws_session_token, region_name)
 
     def translate(
-        self, row: pd.DataFrame, column_names: List[str]
+        self, batch: pd.DataFrame, column_names: List[str]
     ) -> Dict[str, pd.DataFrame]:
-        result = {str: [pd.DataFrame]}
-        for to_language in self.to_languages:
-            result[to_language] = pd.DataFrame()
+        result = {}
+        flattened_content, positions = self._flatten_dataframe(batch, column_names)
 
         for to_language in self.to_languages:
-            for col_index, column_name in enumerate(column_names):
-                original_text = row.iloc[col_index]
-                translation = (
-                    self.client.translate(
-                        original_text,
-                        from_language=self.from_language,
-                        to_language=to_language,
-                    )
-                    if original_text != ""
-                    else original_text
+            translations = [
+                self.client.translate(
+                    text,
+                    from_language=self.from_language,
+                    to_language=to_language,
                 )
-                result[to_language].at[
-                    0, f"{self.from_language}-{column_name}"
-                ] = original_text
-                result[to_language].at[0, f"{to_language}-{column_name}"] = translation
+                for text in flattened_content
+            ]
+
+            translation_data = TranslationResult(
+                column_names=column_names,
+                positions=positions,
+                original_content=flattened_content,
+                translated_content=translations,
+                from_language=self.from_language,
+                to_language=to_language
+            )
+
+            translated_df = self._reconstruct_dataframe(translation_data)
+            result[to_language] = translated_df
 
         return result

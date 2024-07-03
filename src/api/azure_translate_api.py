@@ -2,6 +2,7 @@ from azure.ai.translation.text.models import TranslatedTextItem
 
 from src.api.i_translate_api import ITranslateAPI
 from src.client.azure_translation_client import AzureTranslationClient
+from api.translation_result import TranslationResult
 import pandas as pd
 from typing import List, Dict
 
@@ -12,22 +13,27 @@ class AzureTranslateAPI(ITranslateAPI):
         self.client = AzureTranslationClient(key, region)
 
     def translate(
-        self, row: pd.DataFrame, column_names: List[str]
+        self, batch: pd.DataFrame, column_names: List[str]
     ) -> Dict[str, pd.DataFrame]:
+        result = {}
+        flattened_content, positions = self._flatten_dataframe(batch, column_names)
         response: List[TranslatedTextItem] = self.client.translate(
-            row, self.from_language, self.to_languages
+            flattened_content, self.from_language, self.to_languages
         )
-        result = {str: [pd.DataFrame]}
+
         for to_language in self.to_languages:
-            result[to_language] = pd.DataFrame()
-        for col_index, colum_result in enumerate(response):
-            for translation_index, translation in enumerate(colum_result.translations):
-                column_value = column_names[col_index]
-                result[translation.to].at[0, f"{self.from_language}-{column_value}"] = (
-                    row.iloc[col_index]
-                )
-                result[translation.to].at[
-                    0, f"{translation.to}-{column_value}"
-                ] = translation.text
+            translations = [item.translations[self.to_languages.index(to_language)].text for item in response]
+
+            translation_data = TranslationResult(
+                column_names=column_names,
+                positions=positions,
+                original_content=flattened_content,
+                translated_content=translations,
+                from_language=self.from_language,
+                to_language=to_language
+            )
+
+            translated_df = self._reconstruct_dataframe(translation_data)
+            result[to_language] = translated_df
 
         return result
