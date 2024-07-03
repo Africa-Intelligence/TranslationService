@@ -1,6 +1,7 @@
 import pandas as pd
 from typing import List, Dict, Tuple
-from api.translation_result import TranslationResult
+from src.api.translation_result import TranslationResult
+
 
 class ITranslateAPI(object):
     def __init__(self, from_language: str, to_languages: List[str]):
@@ -8,12 +9,13 @@ class ITranslateAPI(object):
         self.to_languages: List[str] = to_languages
 
     def translate(
-        self, batch: pd.DataFrame, column_names: List[str]
+            self, batch: pd.DataFrame, column_names: List[str]
     ) -> Dict[str, pd.DataFrame]:
         pass
 
-    def _flatten_dataframe(self, df: pd.DataFrame, column_names: List[str]
-    ) -> Tuple[List[str], List[Tuple[int, str]]]:
+    @staticmethod
+    def _flatten_dataframe(df: pd.DataFrame, column_names: List[str]
+                           ) -> Tuple[List[str], List[Tuple[int, str]]]:
         flattened_non_empty_content = []
         positions = []
 
@@ -25,7 +27,8 @@ class ITranslateAPI(object):
 
         return flattened_non_empty_content, positions
 
-    def _reconstruct_dataframe(self, data: TranslationResult) -> pd.DataFrame:
+    @staticmethod
+    def _reconstruct_dataframe(data: TranslationResult) -> pd.DataFrame:
         new_columns = []
         for col in data.column_names:
             new_columns.append(f"{data.from_language}-{col}")

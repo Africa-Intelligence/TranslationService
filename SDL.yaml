@@ -18,6 +18,9 @@ services:
       - OPEN_SOURCE_API=opus
       - ROUTER=advanced
       - BATCH_SIZE=16
+      - LLM=ollama
+      - CONDITIONS=code,min_chars
+      - MIN_CHAR_LENGTH=
 profiles:
   compute:
     translate-en-af:

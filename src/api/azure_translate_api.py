@@ -2,7 +2,7 @@ from azure.ai.translation.text.models import TranslatedTextItem
 
 from src.api.i_translate_api import ITranslateAPI
 from src.client.azure_translation_client import AzureTranslationClient
-from api.translation_result import TranslationResult
+from src.api.translation_result import TranslationResult
 import pandas as pd
 from typing import List, Dict
 

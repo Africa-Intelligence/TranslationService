@@ -1,20 +1,12 @@
-from dotenv import load_dotenv
-import os
 from openai import OpenAI
-from src.condition.i_condition import ICondition
+from src.llm.i_llm import ILLM
 
 
-class OpenAILLM(ICondition):
-    def __init__(self, model: str = "gpt-4o"):
+class OpenAILLM(ILLM):
+    def __init__(self, open_api_key: str, model: str = "gpt-4o"):
         super().__init__()
-        # Load .env file if it exists (for local development)
-        if os.path.exists('.env'):
-            load_dotenv()
         self.model = model
-        self.client = OpenAI(
-            # This is the default and can be omitted
-            api_key=os.getenv("OPENAI_API_KEY"),
-        )
+        self.client = OpenAI(api_key=open_api_key)
 
     def invoke(self, prompt: str) -> str:
         response = self.client.chat.completions.create(
