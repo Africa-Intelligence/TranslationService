@@ -1,6 +1,6 @@
 import pandas as pd
 from typing import List, Dict, Tuple
-from src.api.translation_data import TranslationData
+from api.translation_result import TranslationResult
 
 class ITranslateAPI(object):
     def __init__(self, from_language: str, to_languages: List[str]):
@@ -25,7 +25,7 @@ class ITranslateAPI(object):
 
         return flattened_non_empty_content, positions
 
-    def _reconstruct_dataframe(self, data: TranslationData) -> pd.DataFrame:
+    def _reconstruct_dataframe(self, data: TranslationResult) -> pd.DataFrame:
         new_columns = []
         for col in data.column_names:
             new_columns.append(f"{data.from_language}-{col}")

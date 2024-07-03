@@ -2,7 +2,7 @@ from azure.ai.translation.text.models import TranslatedTextItem
 
 from src.api.i_translate_api import ITranslateAPI
 from src.client.azure_translation_client import AzureTranslationClient
-from src.api.translation_data import TranslationData
+from api.translation_result import TranslationResult
 import pandas as pd
 from typing import List, Dict
 
@@ -15,9 +15,6 @@ class AzureTranslateAPI(ITranslateAPI):
     def translate(
         self, batch: pd.DataFrame, column_names: List[str]
     ) -> Dict[str, pd.DataFrame]:
-        if batch.empty:
-            return {to_language: pd.DataFrame() for to_language in self.to_languages}
-        
         result = {}
         flattened_content, positions = self._flatten_dataframe(batch, column_names)
         response: List[TranslatedTextItem] = self.client.translate(
@@ -27,7 +24,7 @@ class AzureTranslateAPI(ITranslateAPI):
         for to_language in self.to_languages:
             translations = [item.translations[self.to_languages.index(to_language)].text for item in response]
 
-            translation_data = TranslationData(
+            translation_data = TranslationResult(
                 column_names=column_names,
                 positions=positions,
                 original_content=flattened_content,

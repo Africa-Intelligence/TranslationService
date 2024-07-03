@@ -71,7 +71,7 @@ def run():
     else:
         llm: ILLM = OllamaLLM()
         code_condition: ICondition = CodeCondition(llm)
-        size_condition: ICondition = SizeCondition(num_chars=500)
+        size_condition: ICondition = SizeCondition(num_chars=1000)
         open_source_api = api_provider.get(config.get("OPEN_SOURCE_API"), **config)
         closed_source_api = api_provider.get(config.get("CLOSED_SOURCE_API"), **config)
         router = AdvancedRouter([code_condition, size_condition], open_source_api, closed_source_api)

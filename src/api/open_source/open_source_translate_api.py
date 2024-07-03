@@ -2,7 +2,7 @@ from typing import List, Dict
 import pandas as pd
 
 from src.api.i_translate_api import ITranslateAPI
-from src.api.translation_data import TranslationData
+from api.translation_result import TranslationResult
 
 class OpenSourceTranslateAPI(ITranslateAPI):
     def __init__(self, from_language: str, to_languages: List[str]):
@@ -11,15 +11,12 @@ class OpenSourceTranslateAPI(ITranslateAPI):
     def translate(
         self, batch: pd.DataFrame, column_names: List[str]
     ) -> Dict[str, pd.DataFrame]:
-        if batch.empty:
-            return {to_language: pd.DataFrame() for to_language in self.to_languages}
-        
         result = {}
         flattened_content, positions = self._flatten_dataframe(batch, column_names)
 
         for to_language in self.to_languages:
             translations = self._translate(flattened_content, to_language)
-            translation_data = TranslationData(
+            translation_data = TranslationResult(
                 column_names=column_names,
                 positions=positions,
                 original_content=flattened_content,

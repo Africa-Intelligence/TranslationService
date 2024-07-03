@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from typing import List, Tuple
 
 @dataclass
-class TranslationData:
+class TranslationResult:
     column_names: List[str]
     positions: List[Tuple[int, str]]
     original_content: List[str]
