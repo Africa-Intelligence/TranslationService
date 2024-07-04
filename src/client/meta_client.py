@@ -19,5 +19,5 @@ class MetaClient(object):
         self.pipe = pipeline(task="translation", model=self.model, tokenizer=self.tokenizer, device=self.device)
 
     def translate(self, batch: List[str], from_language: str, to_language: str) -> str:
-        result = self.pipe(batch, src_lang=from_language, tgt_lang=to_language)
+        result = self.pipe(batch, src_lang=from_language, tgt_lang=to_language, batch_size=len(batch))
         return [item['translation_text'] for item in result]
