@@ -7,6 +7,7 @@ class DatasetLoader(object):
     def __init__(self, dataset_name: str):
         self.dataset_name = dataset_name
         self.dataset = load_dataset(dataset_name, split="train")
+        self.result_folder = "result"
 
         # Apply dataset-specific transformations
         if dataset_name == "yahma/alpaca-cleaned":
@@ -17,8 +18,11 @@ class DatasetLoader(object):
             self.dataset = self.dataset.map(self.replace_none_with_empty_string) 
         self.df = pd.DataFrame(self.dataset)
 
+        if not os.path.exists(self.result_folder):
+            os.mkdir(self.result_folder)
+
     def write_to_csv(self, result: pd.DataFrame, to_language: str):
-        filename = f"{self.dataset_name.replace('/', '-')}-{to_language}.csv"
+        filename = f"{self.result_folder}/{self.dataset_name.replace('/', '-')}-{to_language}.csv"
         file_exists = os.path.exists(filename)
         mode = "a" if file_exists else "w"
         result.to_csv(

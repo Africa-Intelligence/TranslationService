@@ -1,6 +1,6 @@
 import pandas as pd
 from typing import List, Dict, Tuple
-from src.api.translation_result import TranslationResult
+from src.api.translation.translation_result import TranslationResult
 
 
 class ITranslateAPI(object):

@@ -11,6 +11,8 @@ services:
     env:
       - AZURE_TRANSLATE_API_KEY=
       - AZURE_TRANSLATE_REGION=
+      - HF_API_KEY=
+      - HF_REPO_ID=
       - POETRY_VIRTUALENVS_CREATE=false
       - FROM_LANGUAGE=en
       - TO_LANGUAGES=af
@@ -21,6 +23,7 @@ services:
       - LLM=ollama
       - CONDITIONS=code,min_chars
       - MIN_CHAR_LENGTH=512
+      - RESULT_UPLOADER_API=hf_result_uploader_api
 profiles:
   compute:
     translate-en-af:

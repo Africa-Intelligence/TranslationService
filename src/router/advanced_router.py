@@ -2,7 +2,7 @@ from typing import List, Dict
 
 import pandas as pd
 
-from src.api.i_translate_api import ITranslateAPI
+from src.api.translation.i_translate_api import ITranslateAPI
 from src.condition.i_condition import ICondition
 from src.router.i_router import IRouter
 
