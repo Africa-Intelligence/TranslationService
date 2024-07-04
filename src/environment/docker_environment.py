@@ -10,8 +10,8 @@ class DockerEnvironment(IEnvironment):
         env_vars: Dict[str, Optional[str]] = {}
         to_language_key = EnvVar.ToLanguages.value
         for value in EnvVar:
-            if value == to_language_key:
-                env_vars[to_language_key] = env_vars[to_language_key].split(',')
+            if value.value == to_language_key:
+                env_vars[to_language_key] = os.getenv(value.value).split(',')
             else:
                 env_vars[value.value] = os.getenv(value.value)
         self.set_config(config=env_vars)
