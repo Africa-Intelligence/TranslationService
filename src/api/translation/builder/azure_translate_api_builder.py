@@ -1,4 +1,4 @@
-from src.api.azure_translate_api import AzureTranslateAPI
+from src.api.translation.azure_translate_api import AzureTranslateAPI
 from src.environment.i_environment import EnvVar, IEnvironment
 from src.factory.i_builder import IBuilder
 

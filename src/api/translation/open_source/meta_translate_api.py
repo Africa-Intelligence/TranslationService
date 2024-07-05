@@ -1,4 +1,4 @@
-from src.api.open_source.open_source_translate_api import OpenSourceTranslateAPI
+from src.api.translation.open_source.open_source_translate_api import OpenSourceTranslateAPI
 from src.client.meta_client import MetaClient
 from typing import List
 

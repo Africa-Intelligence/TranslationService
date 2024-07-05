@@ -1,4 +1,4 @@
-from src.api.open_source.opus_translate_api import OpusTranslateAPI
+from src.api.translation.open_source.opus_translate_api import OpusTranslateAPI
 from src.environment.i_environment import IEnvironment, EnvVar
 from src.factory.i_builder import IBuilder
 

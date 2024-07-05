@@ -1,8 +1,8 @@
 from typing import List, Dict
 import pandas as pd
 
-from src.api.i_translate_api import ITranslateAPI
-from src.api.translation_result import TranslationResult
+from src.api.translation.i_translate_api import ITranslateAPI
+from src.api.translation.translation_result import TranslationResult
 
 
 class OpenSourceTranslateAPI(ITranslateAPI):

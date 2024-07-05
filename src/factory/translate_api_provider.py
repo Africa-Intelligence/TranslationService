@@ -1,7 +1,7 @@
-from src.api.builder.aws_translate_api_builder import AWSTranslateAPIBuilder
-from src.api.builder.azure_translate_api_builder import AzureTranslateAPIBuilder
-from src.api.builder.meta_translate_api_builder import MetaTranslateAPIBuilder
-from src.api.builder.opus_translate_api_builder import OpusTranslateAPIBuilder
+from src.api.translation.builder.aws_translate_api_builder import AWSTranslateAPIBuilder
+from src.api.translation.builder.azure_translate_api_builder import AzureTranslateAPIBuilder
+from src.api.translation.builder.meta_translate_api_builder import MetaTranslateAPIBuilder
+from src.api.translation.builder.opus_translate_api_builder import OpusTranslateAPIBuilder
 from src.factory.i_object_factory import IObjectFactory
 
 

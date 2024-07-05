@@ -2,7 +2,7 @@
 version: "2.0"
 services:
   translate-en-af:
-    image: chadbrouze1/translation-service-app:0.1.2
+    image: chadbrouze1/translation-service-app:0.2.3
     expose:
       - port: 80
         as: 80
@@ -11,16 +11,19 @@ services:
     env:
       - AZURE_TRANSLATE_API_KEY=
       - AZURE_TRANSLATE_REGION=
+      - HF_API_KEY=
+      - HF_REPO_ID=
       - POETRY_VIRTUALENVS_CREATE=false
       - FROM_LANGUAGE=en
       - TO_LANGUAGES=af
       - CLOSED_SOURCE_API=azure
       - OPEN_SOURCE_API=opus
       - ROUTER=advanced
-      - BATCH_SIZE=16
+      - BATCH_SIZE=32
       - LLM=ollama
       - CONDITIONS=code,min_chars
-      - MIN_CHAR_LENGTH=
+      - MIN_CHAR_LENGTH=512
+      - RESULT_UPLOADER_API=hf_result_uploader_api
 profiles:
   compute:
     translate-en-af:
@@ -31,6 +34,14 @@ profiles:
           size: 8GB
         storage:
           - size: 8GB
+        gpu:
+          units: 1
+          attributes:
+            vendor:
+              nvidia:
+                - model: rtx3090
+                  ram: 24Gi
+                  interface: pcie
   placement:
     dcloud:
       pricing:

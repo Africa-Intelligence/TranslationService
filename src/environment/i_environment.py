@@ -29,6 +29,8 @@ class EnvVar(Enum):
     AwsSecretKey = "AWS_SECRET_KEY"
     AWSSessionToken = "AWS_SESSION_TOKEN"
     OpenAIAPIKey = "OPENAI_API_KEY"
+    HFAPIKey = "HF_API_KEY"
+    HFRepoId = "HF_REPO_ID"
     PoetryVirtualEnvsCreate = "POETRY_VIRTUALENVS_CREATE"
     FromLanguage = "FROM_LANGUAGE"
     ToLanguages = "TO_LANGUAGES"
@@ -39,3 +41,4 @@ class EnvVar(Enum):
     LLM = "LLM"
     Conditions = "CONDITIONS"
     MinCharLength = "MIN_CHAR_LENGTH"
+    ResultUploaderAPI = "RESULT_UPLOADER_API"

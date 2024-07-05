@@ -1,4 +1,4 @@
-from src.api.open_source.meta_translate_api import MetaTranslateAPI
+from src.api.translation.open_source.meta_translate_api import MetaTranslateAPI
 from src.environment.i_environment import EnvVar, IEnvironment
 from src.factory.i_builder import IBuilder
 
