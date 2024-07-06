@@ -24,13 +24,13 @@ class AdvancedRouter(IRouter):
     ) -> Dict[str, pd.DataFrame]:
         use_closed_source = batch.apply(self.use_closed_source, axis=1)
 
-        closed_source_batch = batch[use_closed_source]
         open_source_batch = batch[~use_closed_source]
+        closed_source_batch = batch[use_closed_source]
 
-        closed_source_results = self.translate_batch(
-            self.closed_source_api, closed_source_batch, column_names)
         open_source_results = self.translate_batch(
             self.open_source_api, open_source_batch, column_names)
+        closed_source_results = self.translate_batch(
+            self.closed_source_api, closed_source_batch, column_names)
 
         translated_batch = {}
         all_languages = set(closed_source_results.keys()) | set(open_source_results.keys())
@@ -39,12 +39,12 @@ class AdvancedRouter(IRouter):
             open_lang_df = open_source_results.get(lang, pd.DataFrame())
             
             # Ensure the index of the result DataFrames match the input batch
-            if not closed_lang_df.empty:
-                closed_lang_df.index = batch[use_closed_source].index
             if not open_lang_df.empty:
                 open_lang_df.index = batch[~use_closed_source].index
+            if not closed_lang_df.empty:
+                closed_lang_df.index = batch[use_closed_source].index
 
-            combined_df = pd.concat([closed_lang_df, open_lang_df])
+            combined_df = pd.concat([open_lang_df, closed_lang_df])
             translated_batch[lang] = combined_df.sort_index()
         
         return translated_batch

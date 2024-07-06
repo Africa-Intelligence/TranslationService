@@ -2,7 +2,7 @@
 version: "2.0"
 services:
   translate-en-af:
-    image: chadbrouze1/translation-service-app:0.2.3
+    image: chadbrouze1/translation-service-app:0.3.1
     expose:
       - port: 80
         as: 80
@@ -15,13 +15,13 @@ services:
       - HF_REPO_ID=
       - POETRY_VIRTUALENVS_CREATE=false
       - FROM_LANGUAGE=en
-      - TO_LANGUAGES=af
+      - TO_LANGUAGES=xh
       - CLOSED_SOURCE_API=azure
       - OPEN_SOURCE_API=opus
       - ROUTER=advanced
-      - BATCH_SIZE=32
+      - BATCH_SIZE=128
       - LLM=ollama
-      - CONDITIONS=code,min_chars
+      - CONDITIONS=code
       - MIN_CHAR_LENGTH=512
       - RESULT_UPLOADER_API=hf_result_uploader_api
 profiles:
@@ -51,5 +51,5 @@ profiles:
 deployment:
   translate-en-af:
     dcloud:
-      profile: translate-en-af
+      profile: translate-en-xh
       count: 1

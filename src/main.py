@@ -18,46 +18,25 @@ from src.factory.environment_provider import EnvironmentProvider
 from src.factory.router_provider import RouterProvider
 from src.router.i_router import IRouter
 from src.data.dataset_loader import DatasetLoader
-
-
-# Function to log progress
-class TqdmToLogger:
-    def __init__(self, logger, level=logging.INFO):
-        self.logger = logger
-        self.level = level
-        self.last_message = None
-
-    def write(self, message):
-        message = message.strip()
-        if message != self.last_message:
-            self.last_message = message
-            self.logger.log(self.level, message)
-
-    def flush(self):
-        pass
-
+from src.log.logger import logging_manager
 
 def run():
-    logging.basicConfig(
-        level=logging.INFO,
-        handlers=[
-            logging.FileHandler("process.log"),
-            logging.StreamHandler(sys.stdout)
-        ]
-    )
-    logger = logging.getLogger()
+    logging_manager.setup_logging()
+    logger = logging_manager.get_logger()
+    logger.info("Starting the application")
     environment: IEnvironment = EnvironmentProvider().get()
     router: IRouter = RouterProvider().get(environment.get_value(EnvVar.Router.value), environment)
     result_uploader: IResultUploaderAPI = (ResultUploaderAPIProvider()
                                            .get(environment.get_value(EnvVar.ResultUploaderAPI.value), environment))
-
     dataset_loader = DatasetLoader("yahma/alpaca-cleaned")
+
     batch_size = int(environment.get_value(EnvVar.BatchSize.value))
     total_batches = (len(dataset_loader.dataset) + batch_size - 1) // batch_size
-    tqdm_out = TqdmToLogger(logger)
-
-    for i, batch in enumerate(
-            tqdm(dataset_loader.dataset.iter(batch_size=batch_size), total=total_batches, file=tqdm_out)):
+    progress_iter = logging_manager.get_progress_logger(
+            dataset_loader.dataset.iter(batch_size=batch_size),
+            total=total_batches
+    )
+    for i, batch in enumerate(progress_iter):
         batch_df = pd.DataFrame(batch)
         offset = i * batch_size
         batch_df.index = range(offset, offset + len(batch_df))
@@ -66,8 +45,19 @@ def run():
         )
         for to_language in environment.get_value(EnvVar.ToLanguages.value):
             dataset_loader.write_to_csv(result[to_language], to_language)
-
     result_uploader.upload_result_file(dataset_loader.result_folder)
+    logger.info("Application completed successfully")
 
-
-run()
+def sleep_indefinitely():
+    logger = logging_manager.get_logger()
+    logger.info("Main process completed. Sleeping indefinitely to keep container alive.")
+    def signal_handler(signum, frame):
+        logger.info("Received shutdown signal. Exiting.")
+        sys.exit(0)
+    signal.signal(signal.SIGTERM, signal_handler)
+    while True:
+        time.sleep(3600) 
+    
+if __name__ == "__main__":
+    run()
+    sleep_indefinitely() #sleep indefinitely to keep the container alive
