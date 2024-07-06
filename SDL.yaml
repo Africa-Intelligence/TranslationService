@@ -1,7 +1,7 @@
 ---
 version: "2.0"
 services:
-  translate-en-af:
+  translate-en-xh:
     image: chadbrouze1/translation-service-app:0.3.1
     expose:
       - port: 80
@@ -26,7 +26,7 @@ services:
       - RESULT_UPLOADER_API=hf_result_uploader_api
 profiles:
   compute:
-    translate-en-af:
+    translate-en-xh:
       resources:
         cpu:
           units: 8
@@ -45,11 +45,11 @@ profiles:
   placement:
     dcloud:
       pricing:
-        translate-en-af:
+        translate-en-xh:
           denom: uakt
           amount: 1000
 deployment:
-  translate-en-af:
+  translate-en-xh:
     dcloud:
       profile: translate-en-xh
       count: 1
