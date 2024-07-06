@@ -59,5 +59,8 @@ def sleep_indefinitely():
         time.sleep(3600) 
     
 if __name__ == "__main__":
-    run()
-    sleep_indefinitely() #sleep indefinitely to keep the container alive
+    try:
+        run()
+        sleep_indefinitely()
+    except Exception as e:
+        sleep_indefinitely()
