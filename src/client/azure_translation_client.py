@@ -30,7 +30,7 @@ class AzureTranslationClient(object):
         except HttpResponseError as exception:
             if exception.error is not None:
                 # Log the error instead of printing
-                self.logger.log(f"Translation Error - Code: {exception.error.code}, Message: {exception.error.message}")
+                self.logger.info(f"Translation Error - Code: {exception.error.code}, Message: {exception.error.message}")
             else:
-                self.logger.log(f"Translation Error: {str(exception)}")
+                self.logger.info(f"Translation Error: {str(exception)}")
             raise
