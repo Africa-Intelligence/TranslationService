@@ -3,8 +3,8 @@ import sys
 import os
 import pandas as pd
 from typing import Dict
-from tqdm import tqdm
-import logging
+import signal
+import time
 
 # Add the parent directory of `src` to the Python path
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -37,6 +37,8 @@ def run():
             total=total_batches
     )
     for i, batch in enumerate(progress_iter):
+        if i < 133:
+            continue
         batch_df = pd.DataFrame(batch)
         offset = i * batch_size
         batch_df.index = range(offset, offset + len(batch_df))
@@ -59,8 +61,5 @@ def sleep_indefinitely():
         time.sleep(3600) 
     
 if __name__ == "__main__":
-    try:
-        run()
-        sleep_indefinitely()
-    except Exception as e:
-        sleep_indefinitely()
+    run()
+    sleep_indefinitely()
