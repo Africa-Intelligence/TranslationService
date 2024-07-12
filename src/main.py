@@ -37,8 +37,6 @@ def run():
             total=total_batches
     )
     for i, batch in enumerate(progress_iter):
-        if i < 133:
-            continue
         batch_df = pd.DataFrame(batch)
         offset = i * batch_size
         batch_df.index = range(offset, offset + len(batch_df))
