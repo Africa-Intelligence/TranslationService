@@ -7,13 +7,13 @@ from src.api.translation.i_translate_api import ITranslateAPI
 from src.api.translation.translation_result import TranslationResult
 
 
-def _combine_translation_chunks(translations: List[str], lengths: List[int]):
+def _combine_translation_chunks(translations: List[str], chunks_per_entry: List[int]):
     combined_translations = []
     running_index = 0
-    for length in lengths:
-        translation_chunks = translations[running_index: running_index+length]
+    for num_chunks in chunks_per_entry:
+        translation_chunks = translations[running_index: running_index+num_chunks]
         combined_translations.append(''.join(translation_chunks))
-        running_index += length
+        running_index += num_chunks
     return combined_translations
 
 
@@ -22,7 +22,7 @@ class OpenSourceTranslateAPI(ITranslateAPI):
         super().__init__(from_language, to_languages)
         self.text_splitter = RecursiveCharacterTextSplitter(
             chunk_size=chunk_size,
-            chunk_overlap=20,
+            chunk_overlap=0,
             length_function=len,
         )
 
@@ -31,16 +31,16 @@ class OpenSourceTranslateAPI(ITranslateAPI):
     ) -> Dict[str, pd.DataFrame]:
         result = {}
         flattened_content, positions = self._flatten_dataframe(batch, column_names)
-        lengths: List[int] = []
-        chunks: List[str] = []
-        for chunk in flattened_content:
-            _chunks = self._get_chunks(chunk)
-            lengths.append(len(_chunks))
-            chunks.extend(_chunks)
+        chunks_per_entry: List[int] = []
+        all_chunks: List[str] = []
+        for entry in flattened_content:
+            entry_chunks = self._get_chunks(entry)
+            chunks_per_entry.append(len(entry_chunks))
+            all_chunks.extend(entry_chunks)
 
         for to_language in self.to_languages:
-            translated_chunks = self._translate(chunks, to_language)
-            translations = _combine_translation_chunks(translated_chunks, lengths)
+            translated_chunks = self._translate(all_chunks, to_language)
+            translations = _combine_translation_chunks(translated_chunks, chunks_per_entry)
 
             translation_data = TranslationResult(
                 column_names=column_names,
@@ -56,8 +56,8 @@ class OpenSourceTranslateAPI(ITranslateAPI):
 
         return result
 
-    def _get_chunks(self, text) -> [str]:
-        chunks: [Document] = self.text_splitter.create_documents([text])
+    def _get_chunks(self, text) -> List[str]:
+        chunks: List[Document] = self.text_splitter.create_documents([text])
         return [chunk.page_content for chunk in chunks]
 
     def _translate(self, batch: List[str], to_language: str) -> List[str]:
