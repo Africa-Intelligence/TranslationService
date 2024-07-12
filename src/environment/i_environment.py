@@ -42,3 +42,4 @@ class EnvVar(Enum):
     Conditions = "CONDITIONS"
     MinCharLength = "MIN_CHAR_LENGTH"
     ResultUploaderAPI = "RESULT_UPLOADER_API"
+    ChunkSize = "CHUNK_SIZE"

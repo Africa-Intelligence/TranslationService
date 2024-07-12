@@ -5,8 +5,8 @@ from typing import Dict, List
 
 class OpusTranslateAPI(OpenSourceTranslateAPI):
 
-    def __init__(self, from_language: str, to_languages: List[str]):
-        super().__init__(from_language, to_languages)
+    def __init__(self, from_language: str, to_languages: List[str], chunk_size: int):
+        super().__init__(from_language, to_languages, chunk_size)
         self.models: Dict[str, OpusClient] = {}
         for to_language in to_languages:
             self.models[to_language] = OpusClient(

@@ -24,6 +24,7 @@ services:
       - CONDITIONS=code
       - MIN_CHAR_LENGTH=512
       - RESULT_UPLOADER_API=hf_result_uploader_api
+      - CHUNK_SIZE=
 profiles:
   compute:
     translate-en-xh:

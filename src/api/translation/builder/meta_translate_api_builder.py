@@ -11,5 +11,6 @@ class MetaTranslateAPIBuilder(IBuilder):
         if not self._instance:
             from_language = env.get_value(EnvVar.FromLanguage.value)
             to_languages = env.get_value(EnvVar.ToLanguages.value)
-            self._instance = MetaTranslateAPI(from_language, to_languages)
+            chunk_size = env.get_value(EnvVar.ChunkSize.value)
+            self._instance = MetaTranslateAPI(from_language, to_languages, int(chunk_size))
         return self._instance
